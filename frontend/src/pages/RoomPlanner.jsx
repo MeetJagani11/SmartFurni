@@ -10,6 +10,7 @@ import AutoLayoutModal from '../components/Planner/AutoLayoutModal';
 import { Layout, Save, Trash2, ArrowLeft, Loader2, Maximize2, RotateCcw, Sparkles, AlertTriangle, Box, Plus, Edit2, Check, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useToast } from '../hooks/use-toast';
+import { getRealisticDimensions } from '../utils/furnitureDimensions';
 
 const RoomPlanner = () => {
     const { user, token } = useAuth();
@@ -237,55 +238,65 @@ const RoomPlanner = () => {
             if (roomType === 'bedroom') {
                 const bed = findItem('bed');
                 if (bed) {
-                    const bw = (bed.width || 0.5) * PPM;
-                    const bl = (bed.length || 0.5) * PPM;
+                    const bedDims = getRealisticDimensions(bed);
+                    const bw = (bed.width || bedDims.width) * PPM;
+                    const bl = (bed.length || bedDims.length) * PPM;
                     // Bed top center against North wall
                     itemsToAdd.push({ product: bed, options: { left: snap(cx - bw / 2), top: snap(20), rotation: 0 } });
 
                     const sideTable = findItem('table') || findItem('stand');
                     if (sideTable) {
-                        const sw = (sideTable.width || 0.5) * PPM;
+                        const stDims = getRealisticDimensions(sideTable);
+                        const sw = (sideTable.width || stDims.width) * PPM;
                         itemsToAdd.push({ product: sideTable, options: { left: snap(cx - bw / 2 - sw - 20), top: snap(20), rotation: 0 } });
                         itemsToAdd.push({ product: sideTable, options: { left: snap(cx + bw / 2 + 20), top: snap(20), rotation: 0 } });
                     }
                 }
                 const wardrobe = findItem('wardrobe') || findItem('cabinet');
                 if (wardrobe) {
-                    itemsToAdd.push({ product: wardrobe, options: { left: snap(RL - ((wardrobe.width || 0.5) * PPM) - 20), top: snap(RW - ((wardrobe.length || 0.5) * PPM) - 20), rotation: 0 } });
+                    const wDims = getRealisticDimensions(wardrobe);
+                    const ww = (wardrobe.width || wDims.width) * PPM;
+                    const wl = (wardrobe.length || wDims.length) * PPM;
+                    itemsToAdd.push({ product: wardrobe, options: { left: snap(RL - ww - 20), top: snap(RW - wl - 20), rotation: 0 } });
                 }
 
             } else if (roomType === 'living') {
                 const sofa = findItem('sofa');
                 if (sofa) {
-                    const sw = (sofa.width || 0.5) * PPM;
-                    const sl = (sofa.length || 0.5) * PPM;
+                    const sDims = getRealisticDimensions(sofa);
+                    const sw = (sofa.width || sDims.width) * PPM;
+                    const sl = (sofa.length || sDims.length) * PPM;
                     // Center bottom
                     itemsToAdd.push({ product: sofa, options: { left: snap(cx - sw / 2), top: snap(RW - sl - 40), rotation: 0 } });
 
                     const table = findItem('table') || findItem('coffee');
                     if (table) {
-                        const tw = (table.width || 0.5) * PPM;
-                        const tl = (table.length || 0.5) * PPM;
-                        itemsToAdd.push({ product: table, options: { left: snap(cx - tw / 2), top: snap(RW - sl - tl - 100), rotation: 0 } });
+                        const tDims = getRealisticDimensions(table);
+                        const tw = (table.width || tDims.width) * PPM;
+                        const tl = (table.length || tDims.length) * PPM;
+                        itemsToAdd.push({ product: table, options: { left: snap(cx - tw / 2), top: snap(RW - sl - tl - 60), rotation: 0 } });
                     }
                 }
                 const tv = findItem('tv') || findItem('console');
                 if (tv) {
-                    const tvw = (tv.width || 0.5) * PPM;
+                    const tvDims = getRealisticDimensions(tv);
+                    const tvw = (tv.width || tvDims.width) * PPM;
                     itemsToAdd.push({ product: tv, options: { left: snap(cx - tvw / 2), top: snap(20), rotation: 0 } });
                 }
 
             } else if (roomType === 'dining') {
                 const table = findItem('dining') || findItem('table');
                 if (table) {
-                    const tw = (table.width || 0.5) * PPM;
-                    const tl = (table.length || 0.5) * PPM;
+                    const tDims = getRealisticDimensions(table);
+                    const tw = (table.width || tDims.width) * PPM;
+                    const tl = (table.length || tDims.length) * PPM;
                     itemsToAdd.push({ product: table, options: { left: snap(cx - tw / 2), top: snap(cy - tl / 2), rotation: 0 } });
 
                     const chair = findItem('chair');
                     if (chair) {
-                        const cw = (chair.width || 0.5) * PPM;
-                        const cl = (chair.length || 0.5) * PPM;
+                        const cDims = getRealisticDimensions(chair);
+                        const cw = (chair.width || cDims.width) * PPM;
+                        const cl = (chair.length || cDims.length) * PPM;
                         // Place 4 chairs around
                         itemsToAdd.push({ product: chair, options: { left: snap(cx - tw / 2 - cw - 20), top: snap(cy - cl / 2), rotation: 90 } });
                         itemsToAdd.push({ product: chair, options: { left: snap(cx + tw / 2 + 20), top: snap(cy - cl / 2), rotation: -90 } });

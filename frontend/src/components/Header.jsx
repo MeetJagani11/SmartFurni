@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,14 +64,13 @@ const Header = () => {
 
             {/* Logo */}
             <Link to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center group cursor-pointer">
-              <div className="text-xl md:text-2xl font-bold text-orange-600">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-orange-600 rounded flex items-center justify-center text-white text-lg md:text-xl group-hover:bg-orange-700 transition-colors">
-                    S
-                  </div>
-                  <span className="group-hover:text-orange-700 transition-colors">SMARTFURNI</span>
-                </div>
-                <div className="text-[10px] md:text-xs text-gray-600 font-normal mt-1 hidden sm:block">
+              <div className="flex flex-col">
+                <img
+                  src={logo}
+                  alt="SmartFurni"
+                  className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+                />
+                <div className="text-[10px] md:text-xs text-gray-600 font-normal mt-0.5 hidden sm:block">
                   Sofas | Recliners | Beds | Dining & More
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingCart, Settings, Users, BarChart2, Sparkles, Sliders, ChevronLeft, ChevronRight } from 'lucide-react';
+import logo from '../../assets/logo.png';
 
 const AdminLayout = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -28,10 +29,10 @@ const AdminLayout = () => {
                     {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                 </button>
 
-                <div className={`p-8 pb-4 transition-all duration-300 ${isCollapsed ? 'px-5' : 'px-8'}`}>
-                    <Link to="/admin" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-orange-200 group-hover:scale-105 transition-transform shrink-0">
-                            S
+                <div className={`p-6 pb-4 transition-all duration-300 ${isCollapsed ? 'px-3 justify-center' : 'px-6'}`}>
+                    <Link to="/admin" className="flex items-center gap-3.5 group">
+                        <div className="w-14 h-12 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                            <img src={logo} alt="SmartFurni Logo" className="w-full h-full object-contain" />
                         </div>
                         <div className={`transition-all duration-300 origin-left ${isCollapsed ? 'opacity-0 scale-0 w-0' : 'opacity-100 scale-100'}`}>
                             <h2 className="text-xl font-extrabold text-gray-900 tracking-tight whitespace-nowrap">Admin<span className="text-orange-600">Pulse</span></h2>

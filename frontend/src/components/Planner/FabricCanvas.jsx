@@ -4,6 +4,7 @@ import { Ruler, Trash2, RotateCw } from 'lucide-react';
 import { Button } from "../ui/button";
 import { useToast } from '../../hooks/use-toast';
 import { useCallback } from 'react';
+import { getRealisticDimensions } from '../../utils/furnitureDimensions';
 
 const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialItems, validateAddition }) => {
     const canvasRef = useRef(null);
@@ -11,7 +12,7 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
     const [selectedObject, setSelectedObject] = useState(null);
     const { toast } = useToast();
 
-    // Pixels per meter (1m = 100px)
+    // Pixels per meter (1m = 80px)
     const PPM = 80;
 
     const checkCollisions = useCallback((movingObj) => {
@@ -36,7 +37,8 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
         if (onItemsUpdate && fabricRef.current) {
             const objects = fabricRef.current.getObjects().filter(o => o.type === 'group');
             const itemsData = objects.map(obj => {
-                const data = obj.data;
+                const data = obj.data || {};
+                const dims = getRealisticDimensions(data);
                 return {
                     product_id: data.id || data.product_id,
                     name: data.name,
@@ -44,8 +46,9 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
                     x: obj.left / PPM,
                     y: obj.top / PPM,
                     rotation: obj.angle,
-                    width: obj.width / PPM,
-                    length: obj.height / PPM,
+                    width: obj.width / PPM || dims.width,
+                    length: obj.height / PPM || dims.length,
+                    height: dims.height,
                     image: data.image
                 };
             });
@@ -198,8 +201,9 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
                 return null;
             }
 
-            const width = (product.width || 0.5) * PPM;
-            const height = (product.length || 0.5) * PPM;
+            const dims = getRealisticDimensions(product);
+            const width = (product.width || dims.width) * PPM;
+            const height = (product.length || dims.length) * PPM;
             const left = options.left !== undefined ? options.left : 100;
             const top = options.top !== undefined ? options.top : 100;
 
@@ -223,7 +227,7 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
             });
 
             // Add text label
-            const text = new fabric.IText(product.name, {
+            const text = new fabric.IText(product.name || 'Furniture', {
                 fontSize: 10,
                 fontFamily: 'Inter',
                 left: 0,
@@ -235,7 +239,7 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
                 left: left,
                 top: top,
                 angle: options.rotation || 0,
-                data: product
+                data: { ...product, width: product.width || dims.width, length: product.length || dims.length, height: product.height || dims.height }
             });
 
             canvas.add(group);
@@ -268,12 +272,14 @@ const FabricCanvas = ({ roomLength, roomWidth, onSave, onItemsUpdate, initialIte
         // Load initial items if any
         if (initialItems && initialItems.length > 0) {
             initialItems.forEach(item => {
+                const dims = getRealisticDimensions(item);
                 // Determine product format (might be from DB layout structure)
                 const productMock = {
                     id: item.product_id,
                     name: item.name,
-                    width: item.width,
-                    length: item.length,
+                    width: item.width || dims.width,
+                    length: item.length || dims.length,
+                    height: item.height || dims.height,
                     image: item.image
                 };
                 window.plannerAddProduct(productMock, {
