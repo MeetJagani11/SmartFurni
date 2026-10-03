@@ -6,6 +6,28 @@ import * as THREE from 'three';
 const PLACEHOLDER_TEXTURE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
+class TextureErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.warn("3D Texture load failed for model, falling back to solid shaded 3D Box:", error?.message || error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 /**
  * Main Model Component
  */
@@ -68,14 +90,22 @@ const Model = ({ item }) => {
           <SafeGltf path={item.modelPath} />
         ) : item?.image ? (
 
-          /* ✅ TEXTURED BOX */
-          <TexturedBox
-            width={width}
-            height={height}
-            length={length}
-            image={item.image}
-            color={color}
-          />
+          /* ✅ TEXTURED BOX WITH ERROR BOUNDARY FALLBACK */
+          <TextureErrorBoundary
+            fallback={
+              <Box args={[width, height, length]} castShadow receiveShadow>
+                <meshStandardMaterial color={color} />
+              </Box>
+            }
+          >
+            <TexturedBox
+              width={width}
+              height={height}
+              length={length}
+              image={item.image}
+              color={color}
+            />
+          </TextureErrorBoundary>
         ) : (
 
           /* ✅ SIMPLE BOX */

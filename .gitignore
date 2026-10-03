@@ -93,6 +93,7 @@ backend/mongodb_data_empty/
 backend/uploads/
 backups/
 backend/backups/
+*.bak_*
 
 # Logs and temporary files
 *.log

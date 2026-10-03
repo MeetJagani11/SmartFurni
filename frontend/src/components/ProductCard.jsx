@@ -7,6 +7,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../apiConfig';
 
 import { useWishlist } from '../context/WishlistContext';
+import { handleImageError } from '../utils/imageFallback';
 
 const ProductCard = ({ product, roomPrefs }) => {
   const { addToCart } = useCart();
@@ -59,6 +60,7 @@ const ProductCard = ({ product, roomPrefs }) => {
         <img
           src={product.image}
           alt={product.name}
+          onError={handleImageError}
           className="w-full h-48 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
         />
 

@@ -10,6 +10,7 @@ import {
 import { Button } from "./ui/button";
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { handleImageError } from '../utils/imageFallback';
 
 const CartDrawer = () => {
     const {
@@ -64,6 +65,7 @@ const CartDrawer = () => {
                                         <img
                                             src={item.image}
                                             alt={item.name}
+                                            onError={handleImageError}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>

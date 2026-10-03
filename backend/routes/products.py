@@ -22,8 +22,8 @@ async def get_products(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     sort_by: Optional[str] = None,
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(1000, ge=1, le=2000),
     background_tasks: BackgroundTasks = None,
     current_user: Optional[User] = Depends(get_optional_current_user) # Optional for public routes
 ):

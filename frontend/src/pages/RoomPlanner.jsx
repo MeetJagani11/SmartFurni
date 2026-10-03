@@ -209,8 +209,9 @@ const RoomPlanner = () => {
             }
 
             // 2. Fetch or filter products (Using general products endpoint)
-            const res = await axios.get(`${API_BASE_URL}/products/`);
-            const allProducts = res.data;
+            const res = await axios.get(`${API_BASE_URL}/products/?limit=1000`);
+            const rawData = res.data || [];
+            const allProducts = Array.from(new Map(rawData.map(p => [p.id || p._id, p])).values());
 
             // Simple search helper
             const findItem = (kw) => {

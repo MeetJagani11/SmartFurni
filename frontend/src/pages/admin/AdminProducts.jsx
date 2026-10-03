@@ -7,6 +7,7 @@ import { useToast } from '../../hooks/use-toast';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { handleImageError } from '../../utils/imageFallback';
 
 const AdminProducts = () => {
     const { user } = useAuth();
@@ -172,7 +173,7 @@ const AdminProducts = () => {
                                 products.map(product => (
                                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="p-4 flex items-center space-x-3">
-                                            <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover border shadow-sm" />
+                                            <img src={product.image} alt={product.name} onError={handleImageError} className="w-12 h-12 rounded-lg object-cover border shadow-sm" />
                                             <div>
                                                 <p className="font-semibold text-gray-900 leading-tight">{product.name}</p>
                                             </div>

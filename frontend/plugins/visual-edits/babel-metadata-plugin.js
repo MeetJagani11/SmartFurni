@@ -768,6 +768,17 @@ const babelMetadataPlugin = ({ types: t }) => {
     visitor: {
       // Add metadata attributes to React components (capitalized JSX)
       JSXElement(jsxPath, state) {
+        const filename =
+          state.filename ||
+          state.file?.opts?.filename ||
+          state.file?.sourceFileName ||
+          "unknown";
+
+        // Skip files in Planner directory and RoomPlanner page
+        if (filename.includes("Planner") || filename.includes("planner")) {
+          return;
+        }
+
         const openingElement = jsxPath.node.openingElement;
         if (!openingElement?.name) return;
         const elementName = getName(openingElement);
@@ -806,6 +817,13 @@ const babelMetadataPlugin = ({ types: t }) => {
           "RoomEnvironment",
           "FurnitureItem",
           "Box",
+          "Environment",
+          "CanvasWrapper",
+          "Room3DViewer",
+          "Model",
+          "SafeGltf",
+          "TexturedBox",
+          "TextureErrorBoundary",
           "primitive",
           "ambientLight",
           "directionalLight",
@@ -901,11 +919,6 @@ const babelMetadataPlugin = ({ types: t }) => {
         }
 
         // Get source location
-        const filename =
-          state.filename ||
-          state.file?.opts?.filename ||
-          state.file?.sourceFileName ||
-          "unknown";
         const lineNumber = openingElement.loc?.start.line || 0;
 
         if (!fileNameCache.has(filename)) {
@@ -1015,6 +1028,19 @@ const babelMetadataPlugin = ({ types: t }) => {
           return;
         }
 
+        // Exclude React Three Fiber lowercase primitives
+        const threePrimitives = new Set([
+          "ambientLight", "directionalLight", "pointLight", "spotLight", "hemisphereLight",
+          "rectAreaLight", "mesh", "group", "primitive", "meshStandardMaterial",
+          "meshBasicMaterial", "meshPhysicalMaterial", "meshPhongMaterial",
+          "meshLambertMaterial", "meshToonMaterial", "planeGeometry", "boxGeometry",
+          "sphereGeometry", "cylinderGeometry", "coneGeometry", "torusGeometry",
+          "ringGeometry", "bufferGeometry", "color", "vector3", "gridHelper", "axesHelper"
+        ]);
+        if (threePrimitives.has(elementName)) {
+          return;
+        }
+
         // Skip if already has metadata
         const hasDebugAttr = jsxPath.node.attributes.some(
           (attr) =>
@@ -1031,6 +1057,11 @@ const babelMetadataPlugin = ({ types: t }) => {
           state.file?.opts?.filename ||
           state.file?.sourceFileName ||
           "unknown";
+
+        // Skip files in Planner directory from having x- attributes injected
+        if (filename.includes("Planner") || filename.includes("planner")) {
+          return;
+        }
 
         const lineNumber = jsxPath.node.loc?.start.line || 0;
 

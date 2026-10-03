@@ -13,6 +13,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../hooks/use-toast';
 import ProductCard from '../components/ProductCard';
+import { handleImageError } from '../utils/imageFallback';
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -262,6 +263,7 @@ const ProductDetails = () => {
                             <img 
                                 src={allImages[activeImage]} 
                                 alt={product.name}
+                                onError={handleImageError}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                             {product.discount && (
@@ -289,7 +291,7 @@ const ProductDetails = () => {
                                             activeImage === idx ? 'border-orange-600 ring-2 ring-orange-100' : 'border-transparent hover:border-gray-300'
                                         }`}
                                     >
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                        <img src={img} alt={product.name || ""} onError={handleImageError} className="w-full h-full object-cover" />
                                     </button>
                                 ))}
                             </div>

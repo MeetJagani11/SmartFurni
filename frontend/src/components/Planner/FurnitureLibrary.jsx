@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../../apiConfig';
 import { Search, Plus, Sofa, Bed, Table, Grid, Box } from 'lucide-react';
 import { Input } from '../ui/input';
+import { handleImageError } from '../../utils/imageFallback';
 
 const FurnitureLibrary = ({ onSelectProduct }) => {
     const [products, setProducts] = useState([]);
@@ -24,8 +25,10 @@ const FurnitureLibrary = ({ onSelectProduct }) => {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/products/`);
-            setProducts(res.data);
+            const res = await axios.get(`${API_BASE_URL}/products/?limit=1000`);
+            const rawData = res.data || [];
+            const uniqueProducts = Array.from(new Map(rawData.map(p => [p.id || p._id, p])).values());
+            setProducts(uniqueProducts);
         } catch (err) {
             console.error("Failed to load library", err);
         } finally {
@@ -103,7 +106,7 @@ const FurnitureLibrary = ({ onSelectProduct }) => {
                         }}
                     >
                         <div className="w-16 h-16 bg-white rounded-lg border overflow-hidden flex-shrink-0">
-                            <img src={product.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                            <img src={product.image} alt={product.name || ""} onError={handleImageError} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                         </div>
                         <div className="flex-1 min-w-0">
                             <div className="text-sm font-semibold text-gray-800 truncate">{product.name}</div>

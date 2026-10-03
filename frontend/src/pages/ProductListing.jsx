@@ -101,6 +101,7 @@ const ProductListing = () => {
             try {
                 let url = `${API_BASE_URL}/products/`;
                 const params = new URLSearchParams();
+                params.append('limit', '1000');
  
                 if (categoryName) {
                     // Map frontend categories to backend categories if needed
@@ -188,8 +189,9 @@ const ProductListing = () => {
                     }
                 }
 
-                if (searchQuery || categoryName) {
-                    url += `?${params.toString()}`;
+                const queryString = params.toString();
+                if (queryString) {
+                    url += `?${queryString}`;
                 }
 
                 const response = await fetch(url);
@@ -197,10 +199,11 @@ const ProductListing = () => {
 
                 const data = await response.json();
 
-                // Because we are now passing the perfectly capitalized category exactly as the 
-                // backend Admin API saved it, we don't need the elaborate hardcoded client-side filtering anymore.
-                // The backend handles the exact match query. 
-                setProducts(data);
+                // Deduplicate items safely by unique id
+                const uniqueProducts = Array.isArray(data)
+                    ? Array.from(new Map(data.map(p => [p.id || p._id, p])).values())
+                    : [];
+                setProducts(uniqueProducts);
 
             } catch (error) {
                 console.error("Error fetching products:", error);
