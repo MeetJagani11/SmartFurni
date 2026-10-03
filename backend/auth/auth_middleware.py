@@ -7,9 +7,7 @@ from database import get_database
 
 db = get_database()
 
-# Security configuration (duplicated for simplicity or moved to a config later)
-SECRET_KEY = os.environ.get("JWT_SECRET", "dev_secret_key")
-ALGORITHM = "HS256"
+from auth.config import SECRET_KEY, ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
@@ -57,10 +55,6 @@ async def get_optional_current_user(request: Request):
 async def get_current_admin_user(current_user: User = Depends(get_current_user)):
     print(f"ADMIN_CHECK: User={current_user.email}, is_admin={current_user.is_admin}")
     
-    # Bypass for debugging or explicit allow
-    if current_user.email == 'meetjagani1107@gmail.com':
-        return current_user
-        
     if not current_user.is_admin:
         print(f"ADMIN_CHECK_FAILED: {current_user.email} is not an admin")
         raise HTTPException(

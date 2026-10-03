@@ -70,20 +70,27 @@ async def forgot_password_route(request: ForgotPasswordRequest):
         # Generate token and save
         success, error = await request_password_reset(request.email)
         
-        # Get the latest token from DB to show in dev
-        user_updated = await db.users.find_one({"email": request.email})
-        token = user_updated.get("reset_token")
-        frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
-        reset_link = f"{frontend_url}/reset-password?token={token}"
+        # Check environment mode (default to safe non-exposure if missing/unclear/production)
+        env_mode = os.environ.get("ENVIRONMENT", os.environ.get("ENV", os.environ.get("APP_ENV", ""))).strip().lower()
+        is_dev = env_mode in ["development", "dev", "local"]
 
-        # Return success with a helpful message for dev
+        response_data = {
+            "message": "Reset link has been generated.",
+            "info": "For real emails, please set a valid SMTP_PASSWORD in your .env file."
+        }
+
+        # Include dev_link ONLY when explicitly running in local development mode
+        if is_dev:
+            user_updated = await db.users.find_one({"email": request.email})
+            token = user_updated.get("reset_token") if user_updated else None
+            if token:
+                frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+                response_data["dev_link"] = f"{frontend_url}/reset-password?token={token}"
+
+        # Return response
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={
-                "message": "Reset link has been generated.",
-                "dev_link": reset_link, # Returning this so the UI can show it in console/UI for easy testing
-                "info": "For real emails, please set a valid SMTP_PASSWORD in your .env file."
-            }
+            content=response_data
         )
     except Exception as e:
         import traceback

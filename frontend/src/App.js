@@ -62,7 +62,9 @@ const Home = () => {
 };
 
 function App() {
-  const isAdminPort = window.location.port === '4030';
+  const isDevAdminPort = typeof window !== 'undefined' && window.location.port === '4030';
+  const isAdminSubdomain = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+  const isAdminEntry = isDevAdminPort || isAdminSubdomain;
 
   return (
     <div className="App">
@@ -71,8 +73,8 @@ function App() {
           <WishlistProvider>
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={isAdminPort ? <Navigate to="/admin" replace /> : <Home />} />
-                <Route path="/login" element={isAdminPort ? <Navigate to="/admin/login" replace /> : <Login />} />
+                <Route path="/" element={isAdminEntry ? <Navigate to="/admin" replace /> : <Home />} />
+                <Route path="/login" element={isAdminEntry ? <Navigate to="/admin/login" replace /> : <Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/ai-recommendations" element={<AIRecommendations />} />

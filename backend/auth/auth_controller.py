@@ -8,10 +8,8 @@ from database import get_database
 
 db = get_database()
 
-# Security configuration
-SECRET_KEY = os.environ.get("JWT_SECRET", "dev_secret_key")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 525600 # 365 days (1 year)
+from auth.config import SECRET_KEY, ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = 20160 # 14 days
 
 def verify_password(plain_password, hashed_password):
     if isinstance(hashed_password, str):

@@ -21,9 +21,7 @@ const ForgotPassword = () => {
         setError('');
 
         try {
-            console.log(`Sending forgot password request for: ${email}`);
-            const response = await axios.post(`${API_BASE_URL}/auth/forgot-password`, { email });
-            console.log("Forgot password response:", response.data);
+            await axios.post(`${API_BASE_URL}/auth/forgot-password`, { email });
 
             toast({
                 title: "Reset link sent",

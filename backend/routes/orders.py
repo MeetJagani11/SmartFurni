@@ -51,7 +51,7 @@ async def request_order_return(
     try:
         # Find order
         # If user is admin, they can return any order
-        if current_user.is_admin or current_user.email == 'meetjagani1107@gmail.com':
+        if current_user.is_admin:
             order_doc = await db.orders.find_one({"id": order_id})
         else:
             order_doc = await db.orders.find_one({"id": order_id, "userId": current_user.id})
@@ -138,7 +138,7 @@ async def cancel_order(
             print(f"Order NOT found in DB even without user filter!")
 
         # If user is admin, they can cancel any order
-        if current_user.is_admin or current_user.email == 'meetjagani1107@gmail.com':
+        if current_user.is_admin:
             order_doc = order_doc_any
         else:
             order_doc = await db.orders.find_one({"id": order_id, "userId": current_user.id})
